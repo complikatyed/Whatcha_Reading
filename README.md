@@ -6,7 +6,7 @@ NSS C8 - P2-W4 - Half capstone Ruby
 
 This will be a small command-line program that asks the user to track the books she's reading.
 
-Users will be able to add book title and author, reading start and end dates, a short plot description, and a mini-review (using a "1-4 stars" format).
+Users will be able to add book title and author, reading start and end dates, a short plot description, and a mini-review (using a "1-5 stars" format).
 
 ## Features
 
@@ -118,8 +118,6 @@ Acceptance Criteria:
 ### Adding a mini-review
 
 In order to remind myself of whether I liked the book, I want to add a simple rating from 1 to 5.
-
-Usage:
 
 Usage:
 > `./whatcha_reading edit`  
