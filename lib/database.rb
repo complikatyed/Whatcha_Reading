@@ -9,23 +9,31 @@ class Database
       title varchar(200) NOT NULL,
       start_date date,
       end_date date,
-      topic varchar(200)
-      ranking integer
+      topic varchar(200),
+      ranking integer,
+      genre_id integer NOT NULL
     );
     SQL
-    Database.execute <<-SQL
-    CREATE TABLE IF NOT EXISTS authors (
-      id integer PRIMARY KEY AUTOINCREMENT,
-      last_name varchar (30) NOT NULL,
-      first_name varchar (30) NOT NULL
-    );
-    SQL
-    Database.execute <<-SQL
-    CREATE TABLE IF NOT EXISTS genres (
-      id integer PRIMARY KEY AUTOINCREMENT,
-      name varchar (30) NOT NULL
-    );
-    SQL
+    # Database.execute <<-SQL
+    # CREATE TABLE IF NOT EXISTS authors (
+    #   id integer PRIMARY KEY AUTOINCREMENT,
+    #   last_name varchar (30) NOT NULL,
+    #   first_name varchar (30) NOT NULL
+    # );
+    # SQL
+    # Database.execute <<-SQL
+    # CREATE TABLE IF NOT EXISTS genres (
+    #   id integer PRIMARY KEY AUTOINCREMENT,
+    #   name varchar (30) NOT NULL
+    # );
+    # SQL
+    # Databse.execute <<-SQL
+    # CREATE TABLE IF NOT EXISTS book_authors (
+    #   id integer PRIMARY KEY AUTOINCREMENT,
+    #   book_id integer,
+    #   author_id integer
+    #   );
+    # SQL
   end
 
   def self.execute(*args)
