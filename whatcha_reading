@@ -1,5 +1,45 @@
 #!/usr/bin/env ruby
 require 'highline/import'
 
+Dir["./app/**/*.rb"].each { |f| require f}
+Dir["./lib/*.rb"].each { |f| require f}
+
+if ARGV.size == 1 and ARGV[0] == "add"
+  books_controller = BooksController.new
+  response = ""
+  until /has\sbeen\sadded.$/.match(response) do
+    user_input = ask("What book would you like to add?")
+    response = books_controller.add(user_input)
+    say(response) unless response.nil?
+  end
+  #   loop do
+  #     user_input = ask("What is the book's genre?")
+  #     response = genres_controller.add(user_input)
+  #     say(response) unless response.nil?
+  #     if /has\sbeen\sadded$/.match(response)
+  #       break
+  #     end
+  #   end
+  #   loop do
+  #     user_input = ask("Who is the book's author?")
+  #     response = authors_controller.add(user_input)
+  #     say(response) unless response.nil?
+  #     if /has\sbeen\sadded$/.match(response)
+  #       break
+  #     end
+  #   end
+  # end
+elsif ARGV.size == 1 and ARGV[0] == "edit"
+  puts "edit works"
+  exit
+elsif ARGV.size == 1 and ARGV[0] == "list"
+  puts "list works"
+  exit
+elsif ARGV.size == 1 and ARGV[0] == "exit"
+  puts "exit works"
+  exit
+else
+  puts "[Help] Run as: ./whatcha_reading add edit or list"
+end
 
 
