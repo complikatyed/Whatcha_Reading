@@ -1,5 +1,29 @@
 require_relative '../test_helper'
 
+describe Book do
+	describe "#all" do
+		describe "if there are no books in the database" do
+			it "returns an empty array" do
+				assert_equal [], Book.all
+			end
+		end
+		describe "if there are books in the database" do
+			before do
+				create_book("Sorcery")
+				create_book("Equal Rites")
+				create_book("Witches Abroad")
+			end
+			it "returns a populated array" do
+				assert_equal Array, Book.all.class
+			end
+			it "populates the returned books' ids" do
+				expected_ids = Database.execute("SELECT id FROM books").map{ |row| row['id'] }
+				actual_ids = Book.all.map{ |book| book.id }
+				assert_equal expected_ids, actual_ids
+			end
+		end
+	end
+
   describe ".initialize" do
     it "sets the title attribute" do
       book = Book.new("foo")
@@ -39,7 +63,7 @@ require_relative '../test_helper'
   		end
   		it "populates the error message" do
   			book.save
-  			assert_equal "\"\" is not a valid book title.", book.errors
+  			assert_equal "\'\' is not a valid book title.", book.errors
   		end
   	end
   end
@@ -62,7 +86,7 @@ require_relative '../test_helper'
   		end
   		it "sets the error message" do
   			book.valid?
-  			assert_equal "\"\" is not a valid book title.", book.errors
+  			assert_equal "\'\' is not a valid book title.", book.errors
   		end
   	end
   	describe "with empty string title" do
@@ -72,7 +96,7 @@ require_relative '../test_helper'
   		end
   		it "sets the error message" do
   			book.valid?
-  			assert_equal "\"\" is not a valid book title.", book.errors
+  			assert_equal "\'\' is not a valid book title.", book.errors
   		end
   	end
   	describe "with a previously invalid title" do
@@ -92,4 +116,50 @@ require_relative '../test_helper'
   	end
   end
 
+  describe "updating book information" do
 
+  	describe "successful edit of previously entered book record" do
+  		let(:book_title){ "Carpe Jugulam" }
+  		let(:new_book_title){ "Carpe Jugulum" }
+  		it "updates book name but not id" do
+  			book = Book.new(book_title)
+  			book.save
+  			assert_equal 1, Book.count
+  			book.title = new_book_title
+  			assert book.save
+   			assert_equal 1, Book.count
+   			last_row = Database.execute("SELECT * FROM books")[0]
+  			assert_equal new_book_title, last_row['title']
+  		end
+
+  	  it "only changes the desired record" do
+  	  	book2 = Book.new("Equal Rites")
+  	  	book2.save
+  	  	book = Book.new(book_title)
+  	  	book.save
+  	  	assert_equal 2, Book.count
+  	  	book.title = new_book_title
+  	  	assert book.save
+  	  	assert_equal 2, Book.count
+
+  	  	book3 = Book.find(book2.id)
+  	  	assert_equal book2.title, book3.title
+  	  end
+  	end
+
+  	describe "edit fails when no new title provided" do
+  		let(:book_title){ "Carpe Jugulum" }
+  		let(:new_book_title){ "" }
+  		it "does not update anything" do
+  			book = Book.new(book_title)
+  			book.save
+  			assert_equal 1, Book.count
+  			book.title = new_book_title
+  			refute book.save
+  			last_row = Database.execute("SELECT * FROM books")[0]
+  			assert_equal book_title, last_row['title']
+  		end
+  	end
+  end
+
+end
