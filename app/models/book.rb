@@ -6,8 +6,12 @@ class Book
     self.title = title
   end
 
-  def self.all?
-    Database.execute("select * from books by index").map do |row|
+  def ==(other)
+    other.is_a?(Book) && other.id == self.id
+  end
+
+  def self.all
+    Database.execute("select * from books").map do |row|
       populate_from_database(row)
     end
   end
@@ -16,18 +20,18 @@ class Book
     Database.execute("select count(id) from books")[0][0]
   end
 
-  def self.find
-    row = Database.execute("select * from scenarios where id = ?", id).first
+  def self.find(id)
+    row = Database.execute("select * from books where id = ?", id).first
     if row.nil?
       nil
     else
-      populate_from_database
+      populate_from_database(row)
     end
   end
 
   def valid?
     if title.nil? or title.empty? or /^\d+$/.match(title)
-      @errors = "\"#{title}\" is not a valid book title."
+      @errors = "\'#{title}\' is not a valid book title."
       false
     else
       @errors = nil
@@ -37,8 +41,14 @@ class Book
 
   def save
     return false unless valid?
-    Database.execute("INSERT INTO books (title) VALUES (?)", title)
-    @id = Database.execute("SELECT last_insert_rowid()")[0]['last_insert_rowid()']
+    if @id.nil?
+      Database.execute("INSERT INTO books (title) VALUES (?)", title)
+      @id = Database.execute("SELECT last_insert_rowid()")[0]['last_insert_rowid()']
+      true
+    else
+      Database.execute("UPDATE books SET title=? WHERE id=?", title, id)
+      true
+    end
   end
 
   private

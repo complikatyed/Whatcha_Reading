@@ -25,4 +25,16 @@ class BooksController
 		end
 	end
 
+	def edit(book)
+		loop do
+			user_input = ask("Enter a new title:")
+			book.title = user_input.strip
+			if book.save
+				say("Book has been updated to: \"#{book.name}\"")
+				return
+			else
+				say(book.errors)
+			end
+		end
+	end
 end
