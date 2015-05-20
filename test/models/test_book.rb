@@ -1,6 +1,7 @@
 require_relative '../test_helper'
 
 describe Book do
+
 	describe "#all" do
 		describe "if there are no books in the database" do
 			it "returns an empty array" do
@@ -23,6 +24,63 @@ describe Book do
 			end
 		end
 	end
+
+describe "#find" do
+    let(:book){ Book.new("Foundation") }
+    before do
+      book.save
+    end
+    describe "if there isn't a matching book in the database" do
+      it "should return nil" do
+        assert_equal nil, Book.find("Foundation")
+      end
+    end
+    describe "if there is a matching book in the database" do
+      it "should return the book, populated with id and name" do
+        actual = Book.find(book.id)
+        assert_equal book.id, actual.id
+        assert_equal book.title, actual.title
+      end
+    end
+  end
+
+  describe "equality" do
+    describe "when the book ids are the same" do
+      it "is true" do
+        book1 = Book.new("foo")
+        book1.save
+        book2 = Book.all.first
+        assert_equal book1, book2
+      end
+    end
+    describe "when the book ids are not the same" do
+      it "is true" do
+        book1 = Book.new("foo")
+        book1.save
+        book2 = Book.new("foo")
+        book2.save
+        assert book1 != book2
+      end
+    end
+  end
+
+  describe "#count" do
+    describe "if there are no books in the database" do
+      it "should return 0" do
+        assert_equal 0, Book.count
+      end
+    end
+    describe "if there are books" do
+      before do
+        create_book("Bob")
+        create_book("Sally")
+        create_book("Amanda")
+      end
+      it "should return the correct count" do
+        assert_equal 3, Book.count
+      end
+    end
+  end
 
   describe ".initialize" do
     it "sets the title attribute" do

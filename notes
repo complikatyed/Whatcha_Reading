@@ -1,0 +1,16 @@
+  # genre_controller = GenreController.new
+  # genre_response = ""
+  # until /has\sbeen\sadded.$/.match(response) do
+  #   user_input = ask("What is the book's genre?")
+  #   response = books_controller.add(user_input)
+  #   say(response) unless response.nil?
+  # end
+  #   loop do
+  #     user_input = ask("Who is the book's author?")
+  #     response = authors_controller.add(user_input)
+  #     say(response) unless response.nil?
+  #     if /has\sbeen\sadded$/.match(response)
+  #       break
+  #     end
+  #   end
+  # end

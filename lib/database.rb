@@ -13,17 +13,17 @@ class Database
       ranking integer
     );
     SQL
-    # Database.execute <<-SQL
+    Database.execute <<-SQL
+    CREATE TABLE IF NOT EXISTS genres (
+      id integer PRIMARY KEY AUTOINCREMENT,
+      name varchar (30) NOT NULL
+    );
+    SQL
+    #     Database.execute <<-SQL
     # CREATE TABLE IF NOT EXISTS authors (
     #   id integer PRIMARY KEY AUTOINCREMENT,
     #   last_name varchar (30) NOT NULL,
     #   first_name varchar (30) NOT NULL
-    # );
-    # SQL
-    # Database.execute <<-SQL
-    # CREATE TABLE IF NOT EXISTS genres (
-    #   id integer PRIMARY KEY AUTOINCREMENT,
-    #   name varchar (30) NOT NULL
     # );
     # SQL
     # Databse.execute <<-SQL

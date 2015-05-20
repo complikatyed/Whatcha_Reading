@@ -6,7 +6,7 @@ describe BooksController do
     let(:controller) {BooksController.new}
 
     it "should say no books found when empty" do
-      # Temporarily skipped out.  To fix, see: https://github.com/JEG2/highline/issues/28
+      skip
       actual_output = controller.index
       expected_output = "No books found. Please add a new book.\n"
       assert_equal expected_output, actual_output

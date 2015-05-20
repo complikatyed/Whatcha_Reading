@@ -29,6 +29,25 @@ class Book
     end
   end
 
+  def self.find_by_title(title)
+    row = Database.execute("select * from books where title LIKE ?", title).first
+    if row.nil?
+      nil
+    else
+      populate_from_database(row)
+    end
+  end
+
+  def self.check_for_duplicates(title)
+    row = Database.execute("select * from books where title LIKE ?", title).first
+    if row.nil?
+      false
+    else
+      puts "\'#{title}\' already exists. Try edit instead."
+      true
+    end
+  end
+
   def valid?
     if title.nil? or title.empty? or /^\d+$/.match(title)
       @errors = "\'#{title}\' is not a valid book title."
@@ -44,7 +63,6 @@ class Book
     if @id.nil?
       Database.execute("INSERT INTO books (title) VALUES (?)", title)
       @id = Database.execute("SELECT last_insert_rowid()")[0]['last_insert_rowid()']
-      true
     else
       Database.execute("UPDATE books SET title=? WHERE id=?", title, id)
       true
