@@ -18,12 +18,12 @@ if ARGV.empty?
           response = books_controller.add(user_input)
             say(response) unless response.nil?
             if /has\sbeen\sadded.$/.match(response)
-          end
-          user_input = ask("What is the book's primary genre?")
-          response = genres_controller.add(user_input)
-          say(response) unless response.nil?
-          if /has\sbeen\sadded.$/.match(response)
-            break
+              break
+          # end
+          # user_input = ask("What start date would you like to use?")
+          # response = books_controller.add_date(user_input)
+          # if /has\sbeen\sadded.$/.match(response)
+          #   break
           end
         end
       end
@@ -35,7 +35,7 @@ if ARGV.empty?
         books_controller.index
       end
       menu.choice('Exit the program') do
-        say("Go read something!\n")
+        say("\nGo read something!\n\n")
         exit
       end
     end
