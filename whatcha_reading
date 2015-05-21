@@ -28,14 +28,13 @@ if ARGV.empty?
         end
       end
       menu.choice('Edit book info') do
-        user_input = ask("What book would you like to edit?")
-        response = books_controller.edit(user_input)
+        books_controller.edit_book
       end
       menu.choice('View the book list') do
-        books_controller.index
+        books_controller.index    # Seems to be working, need to write and run additional tests
       end
       menu.choice('Exit the program') do
-        say("\nGo read something!\n\n")
+        say("\nGo read something!\n\n")   # Also working, also needs additional tests
         exit
       end
     end

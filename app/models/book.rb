@@ -50,7 +50,7 @@ class Book
       @errors = "\'#{title}\' is not a valid book title."
       false
     elsif Book.find_by_title(title)
-      @errors = "\'#{title}\' already exists. Add a different book or choose 'edit' instead."
+      @errors = "\'#{title}\' already exists. Please add a different book."
       false
     else
       @errors = nil
@@ -60,18 +60,25 @@ class Book
 
   def save
     return false unless valid?
-    topic = "lobsters"
-    ranking = "5"
-    end_date = "2015/12/13"
-    start_date = "2014/12/14"
+    topic = "not yet entered"
+    ranking = "0"
+    end_date = ""
+    start_date = ""
     if @id.nil?
-      Database.execute("INSERT INTO books (title, topic, ranking, end_date, start_date) VALUES (?,?,?,?,?)", title,topic, ranking, end_date, start_date)
+      Database.execute("INSERT INTO books (title, topic, ranking, end_date, start_date) VALUES (?,?,?,?,?)", title, topic, ranking, end_date, start_date)
       @id = Database.execute("SELECT last_insert_rowid()")[0]['last_insert_rowid()']
     else
-      Database.execute("UPDATE books SET title=? WHERE id=?", title, id)
+      Database.execute("UPDATE books SET title=?, topic=?, ranking=?, end_date=?, start_date=? WHERE id=?", title, topic, ranking, end_date, start_date, id)
       true
     end
   end
+
+  def update
+    Database.execute("UPDATE books SET title=?, topic=?, ranking=?, end_date=?, start_date=? WHERE id=?", title, topic, ranking, end_date, start_date, id)
+      true
+  end
+
+
 
   private
 
