@@ -1,46 +1,16 @@
 #!/usr/bin/env ruby
 require 'highline/import'
+require_relative "./lib/environment"
 
-Dir["./app/**/*.rb"].each { |f| require f}
-Dir["./lib/*.rb"].each { |f| require f}
+Dir["./lib/*.rb"].each { |f| require f }
+Dir["./app/**/*.rb"].each { |f| require f }
 
-if ARGV.empty?
-  loop do
-    choose do |menu|
-      menu.prompt = ""
-
-      books_controller = BooksController.new
-      genres_controller = GenresController.new
-
-      menu.choice('Add a book') do
-        loop do
-          user_input = ask("What book would you like to add?")
-          response = books_controller.add(user_input)
-            say(response) unless response.nil?
-            if /has\sbeen\sadded.$/.match(response)
-              break
-          # end
-          # user_input = ask("What start date would you like to use?")
-          # response = books_controller.add_date(user_input)
-          # if /has\sbeen\sadded.$/.match(response)
-          #   break
-          end
-        end
-      end
-      menu.choice('Edit book info') do
-        books_controller.edit_book
-      end
-      menu.choice('View the book list') do
-        books_controller.index    # Seems to be working, need to write and run additional tests
-      end
-      menu.choice('Exit the program') do
-        say("\nGo read something!\n\n")   # Also working, also needs additional tests
-        exit
-      end
-    end
+loop do
+  choose do |menu|
+    menu.prompt = ""
+    menu.choice('Add a book') { BooksController.new.add_book }
+    menu.choice('Edit book info') { BooksController.new.edit_book }
+    menu.choice('View the book list') { BooksController.new.index }
+    menu.choice('Exit the program') { BooksController.new.exit_program }
   end
-else
-  puts "[Help] Run as: ./whatcha_reading"
 end
-
-
