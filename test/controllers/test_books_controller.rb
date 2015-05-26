@@ -4,7 +4,6 @@ describe BooksController do
 
   describe ".index" do
     let(:controller) {BooksController.new}
-
     it "should say no books found when empty" do
       skip
       actual_output = controller.index
@@ -15,16 +14,17 @@ describe BooksController do
 
   describe ".add" do
     let(:controller) {BooksController.new}
-
+    title = "Equal Rites"
+    start = "2014/04/12"
     it "should add a book" do
-      controller.add("Equal Rites")
+      controller.add(title, start)
       assert_equal 1, Book.count
     end
-
     it "should not add book all spaces" do
       title = " "
-      result = controller.add(title)
-      assert_equal "\'\' is not a valid book title.", result
+      start = "2014/04/12"
+      result = controller.add(title, start)
+      assert_equal "Title can't be blank.", result
     end
 
   end

@@ -3,19 +3,11 @@ require_relative '../test_helper'
 describe Book do
 
 	describe "#all" do
-		describe "if there are no books in the database" do
-			it "returns an empty array" do
-				assert_equal [], Book.all
-			end
-		end
 		describe "if there are books in the database" do
 			before do
 				create_book("Sorcery")
 				create_book("Equal Rites")
 				create_book("Witches Abroad")
-			end
-			it "returns a populated array" do
-				assert_equal Array, Book.all.class
 			end
 			it "populates the returned books' ids" do
 				expected_ids = Database.execute("SELECT id FROM books").map{ |row| row['id'] }
@@ -26,14 +18,9 @@ describe Book do
 	end
 
 describe "#find" do
-    let(:book){ Book.new("Foundation") }
+    let(:book){ Book.new(title: "Foundation") }
     before do
       book.save
-    end
-    describe "if there isn't a matching book in the database" do
-      it "should return nil" do
-        assert_equal nil, Book.find("Foundation")
-      end
     end
     describe "if there is a matching book in the database" do
       it "should return the book, populated with id and name" do
@@ -44,10 +31,25 @@ describe "#find" do
     end
   end
 
+  describe "#find_by_title" do
+    let(:book){ Book.new(title: "Foundation") }
+    before do
+      book.save
+    end
+    describe "if there is a matching book in the database" do
+      it "should return the book, populated with id and name" do
+        actual = Book.find_by_title("Foundation")
+        assert_equal book.id, actual.id
+        assert_equal book.title, actual.title
+      end
+    end
+  end
+
+
   describe "equality" do
     describe "when the book ids are the same" do
       it "is true" do
-        book1 = Book.new("foo")
+        book1 = Book.new(title: "foo")
         book1.save
         book2 = Book.all.first
         assert_equal book1, book2
@@ -55,9 +57,9 @@ describe "#find" do
     end
     describe "when the book ids are not the same" do
       it "is true" do
-        book1 = Book.new("foo")
+        book1 = Book.new(title: "foo")
         book1.save
-        book2 = Book.new("foo")
+        book2 = Book.new(title: "foo")
         book2.save
         assert book1 != book2
       end
@@ -84,14 +86,14 @@ describe "#find" do
 
   describe ".initialize" do
     it "sets the title attribute" do
-      book = Book.new("foo")
+      book = Book.new(title: "foo")
       assert_equal "foo", book.title
     end
   end
 
   describe ".save" do
   	describe "if the model is valid" do
-  		let(:book){ Book.new("Guards, Guards") }
+  		let(:book){ Book.new(title: "Guards, Guards") }
   		it "should return true" do
   			assert book.save
   		end
@@ -111,7 +113,7 @@ describe "#find" do
   	end
 
   	describe "if the model is invalid" do
-  		let(:book){ Book.new("") }
+  		let(:book){ Book.new(title: "") }
   		it "returns false" do
   			refute book.save
   		end
@@ -121,44 +123,58 @@ describe "#find" do
   		end
   		it "populates the error message" do
   			book.save
-  			assert_equal "\'\' is not a valid book title.", book.errors
+  			assert_equal ["Title can't be blank."], book.errors.full_messages
   		end
   	end
+
+    describe "if the title is a duplicate" do
+      before do
+        create_book("Foundation")
+      end
+      let(:book){ Book.new(title: "Foundation") }
+      it "returns false" do
+        refute book.save
+      end
+      it "does not save the model to the database" do
+        book.save
+        assert_equal 1, Book.count
+      end
+      it "populates the error message" do
+        book.save
+        assert_equal "Title has already been taken. Please add a different book.", book.errors.full_messages.join
+      end
+    end
   end
 
   describe ".valid?" do
   	describe "with valid data" do
-  		let(:book){ Book.new("Mort") }
+  		let(:book){ Book.new(title: "Mort") }
   		it "returns true" do
   			assert book.valid?
   		end
-  		it "sets errors to nil" do
-  			book.valid?
-  			assert book.errors.nil?
-  		end
   	end
   	describe "with no title provided" do
-  		let(:book){ Book.new(nil) }
+  		let(:book){ Book.new(title: nil) }
   		it "returns false" do
   			refute book.valid?
   		end
   		it "sets the error message" do
   			book.valid?
-  			assert_equal "\'\' is not a valid book title.", book.errors
-  		end
+  		  assert_equal ["Title can't be blank."], book.errors.full_messages
+      end
   	end
   	describe "with empty string title" do
-  		let(:book){ Book.new("") }
+  		let(:book){ Book.new(title: "") }
   		it "returns false" do
   			refute book.valid?
   		end
   		it "sets the error message" do
   			book.valid?
-  			assert_equal "\'\' is not a valid book title.", book.errors
+  			assert_equal ["Title can't be blank."], book.errors.full_messages
   		end
   	end
   	describe "with a previously invalid title" do
-  		let(:book){ Book.new("") }
+  		let(:book){ Book.new(title: "") }
   		before do
   			refute book.valid?
   			book.title = "Carpe Jugulum"
@@ -166,10 +182,6 @@ describe "#find" do
   		end
   		it "should return true" do
   			assert book.valid?
-  		end
-  		it "should not return an error message" do
-  			book.valid?
-  			assert_nil book.errors
   		end
   	end
   end
@@ -180,7 +192,7 @@ describe "#find" do
   		let(:book_title){ "Carpe Jugulam" }
   		let(:new_book_title){ "Carpe Jugulum" }
   		it "updates book name but not id" do
-  			book = Book.new(book_title)
+  			book = Book.new(title: book_title)
   			book.save
   			assert_equal 1, Book.count
   			book.title = new_book_title
@@ -191,9 +203,9 @@ describe "#find" do
   		end
 
   	  it "only changes the desired record" do
-  	  	book2 = Book.new("Equal Rites")
+  	  	book2 = Book.new(title: "Equal Rites")
   	  	book2.save
-  	  	book = Book.new(book_title)
+  	  	book = Book.new(title: book_title)
   	  	book.save
   	  	assert_equal 2, Book.count
   	  	book.title = new_book_title
@@ -209,7 +221,7 @@ describe "#find" do
   		let(:book_title){ "Carpe Jugulum" }
   		let(:new_book_title){ "" }
   		it "does not update anything" do
-  			book = Book.new(book_title)
+  			book = Book.new(title: book_title)
   			book.save
   			assert_equal 1, Book.count
   			book.title = new_book_title
